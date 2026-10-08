@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from condominiums.models import Company
 from setup.models import Address
-from setup.serializers.address import AddressSerializer
+from setup.serializers. import AddressSerializer
 
 
 class CompanySerializer(serializers.ModelSerializer):

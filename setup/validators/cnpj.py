@@ -1,6 +1,6 @@
 import re
 
-from ..errors.core_validator import CoreValidatorError
+from ..errors.core_validator_error import CoreValidatorError
 
 _FIRST_DIGIT_WEIGHTS = (5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)
 _SECOND_DIGIT_WEIGHTS = (6, *_FIRST_DIGIT_WEIGHTS)

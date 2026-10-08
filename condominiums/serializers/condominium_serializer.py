@@ -2,14 +2,18 @@ from django.db import transaction
 from rest_framework import serializers
 
 from condominiums.models import Condominium, CondominiumBilling
-from condominiums.serializers.condominium_billing import CondominiumBillingSerializer
+from condominiums.serializers.block_serializer import BlockSerializer
+from condominiums.serializers.condominium_billing_serializer import (
+    CondominiumBillingSerializer,
+)
 from setup.models import Address
-from setup.serializers.address import AddressSerializer
+from setup.serializers import AddressSerializer
 
 
 class CondominiumSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     billing = CondominiumBillingSerializer()
+    blocks = BlockSerializer(many=True, read_only=True)
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = Condominium
@@ -17,6 +21,7 @@ class CondominiumSerializer(serializers.ModelSerializer):
             "id",
             "company",
             "billing",
+            "blocks",
             "code",
             "name",
             "type",
@@ -28,7 +33,7 @@ class CondominiumSerializer(serializers.ModelSerializer):
             "administration_start_date",
             "is_active",
         )
-        read_only_fields = ("company",)
+        read_only_fields = ("company", "blocks")
 
     @transaction.atomic
     def create(self, validated_data):
