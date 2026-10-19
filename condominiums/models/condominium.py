@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.query_utils import Q
 
+from condominiums.models.query_sets import CondominiumManager
 from setup.models import Address, BaseModel
 from setup.validators.cnpj import validate_cnpj
 
@@ -31,18 +32,35 @@ class Condominium(BaseModel):
     administration_start_date = models.DateField()
 
     is_active = models.BooleanField(default=True)
+    objects = CondominiumManager()
 
     class Meta(BaseModel.Meta):
         verbose_name = "Condominium"
         verbose_name_plural = "Condominiums"
         constraints = (
             models.UniqueConstraint(
-                fields=("company", "code"), name="condominium_company_code_unique"
+                fields=("company", "code"),
+                name="condominium_company_code_unique",
+                violation_error_message="This condominium already exists in this company",
             ),
             models.UniqueConstraint(
-                fields=("cnpj",), condition=Q(cnpj=""), name="condominium_cnpj_unique"
+                fields=("cnpj",),
+                condition=~Q(cnpj=""),
+                name="condominium_company_cnpj_unique",
+                violation_error_message="This cnpj is already in use",
+            ),
+            models.CheckConstraint(
+                name="company_cnpj_has_14_digits",
+                condition=Q(cnpj__regex=r"^[0-9]{14}$"),
+                violation_error_message="CNPJ must contain exactly 14 digits",
             ),
         )
 
     def __str__(self) -> str:
         return f"{self.code} - {self.name}"
+
+    def clean(self):
+        super().clean()
+
+        if self._state.adding:
+            return

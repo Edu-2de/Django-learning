@@ -1,1 +1,1 @@
-from .company import Company as Company
+from .company_view import CompanyViewSet as CompanyViewSet

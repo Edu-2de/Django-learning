@@ -1,6 +1,6 @@
 import re
 
-from ..errors.core_validator import CoreValidatorError
+from ..errors.core_validator_error import CoreValidatorError
 
 
 def validate_cep(value: str) -> None:
