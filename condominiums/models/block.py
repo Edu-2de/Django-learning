@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F
@@ -13,6 +15,7 @@ class Block(BaseModel):
     condominium = models.ForeignKey(
         Condominium, on_delete=models.PROTECT, related_name="blocks"
     )
+    condominum_id: UUID
     name = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True)
 
