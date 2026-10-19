@@ -50,8 +50,8 @@ class Condominium(BaseModel):
                 violation_error_message="This cnpj is already in use",
             ),
             models.CheckConstraint(
-                name="company_cnpj_has_14_digits",
-                condition=Q(cnpj__regex=r"^[0-9]{14}$"),
+                name="condominium_cnpj_has_14_digits",
+                condition=Q(cnpj="") | Q(cnpj__regex=r"^[0-9]{14}$"),
                 violation_error_message="CNPJ must contain exactly 14 digits",
             ),
         )

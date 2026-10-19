@@ -15,7 +15,7 @@ class Block(BaseModel):
     condominium = models.ForeignKey(
         Condominium, on_delete=models.PROTECT, related_name="blocks"
     )
-    condominum_id: UUID
+    condominium_id: UUID
     name = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True)
 
