@@ -18,3 +18,30 @@ class TestCondominiumModel:
             duplicate.full_clean()
 
         assert "This condominium already exists in this company" in str(exc.value)
+
+    def test_duplicate_cnpj_in_same_company(self, make_condominium):
+        existing = make_condominium(cnpj="02074032000167")
+        duplicate = Condominium(company=existing.company, cnpj="02074032000167")
+
+        with pytest.raises(ValidationError) as exc:
+            duplicate.full_clean()
+
+        assert "This cnpj is already in use" in str(exc.value)
+
+    def test_minum_length_of_cnpj(self, make_condominium):
+        condominium = make_condominium()
+        condominium.cnpj = "000"
+
+        with pytest.raises(ValidationError) as exc:
+            condominium.full_clean()
+
+        assert "CNPJ must have 14 characters, without punctuation." in str(exc.value)
+
+    def test_changing_company_fails(self, make_condominium, make_company):
+        condominium = make_condominium()
+        condominium.company = make_company()
+
+        with pytest.raises(ValidationError) as exc:
+            condominium.full_clean()
+
+        assert "company" in exc.value.message_dict

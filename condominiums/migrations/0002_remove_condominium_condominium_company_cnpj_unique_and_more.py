@@ -4,19 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('condominiums', '0001_initial'),
-        ('setup', '__first__'),
+        ("condominiums", "0001_initial"),
+        ("setup", "__first__"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='condominium',
-            name='condominium_company_cnpj_unique',
+            model_name="condominium",
+            name="condominium_company_cnpj_unique",
         ),
         migrations.AddConstraint(
-            model_name='condominium',
-            constraint=models.UniqueConstraint(condition=models.Q(('cnpj', ''), _negated=True), fields=('company', 'cnpj'), name='condominium_company_cnpj_unique', violation_error_message='This cnpj is already in use'),
+            model_name="condominium",
+            constraint=models.UniqueConstraint(
+                condition=models.Q(("cnpj", ""), _negated=True),
+                fields=("company", "cnpj"),
+                name="condominium_company_cnpj_unique",
+                violation_error_message="This cnpj is already in use",
+            ),
         ),
     ]

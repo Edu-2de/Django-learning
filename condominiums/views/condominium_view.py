@@ -8,10 +8,11 @@ class CondominiumViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = CondominiumSerializer
+    http_method_names = ("post", "get", "patch", "head", "options")
 
     def get_queryset(self):
         queryset = (

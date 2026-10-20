@@ -1,9 +1,12 @@
 from typing import TYPE_CHECKING
+from uuid import UUID
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.query_utils import Q
+from django.forms import ValidationError
 
+from condominiums.models.query_sets import CondominiumBillingManager
 from setup.models.base import BaseModel
 
 from .condominium import Condominium
@@ -21,6 +24,7 @@ class CondominiumBilling(BaseModel):
     condominium = models.OneToOneField(
         Condominium, on_delete=models.CASCADE, related_name="billing"
     )
+    condominium_id: UUID
 
     due_day = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(28)],
@@ -59,6 +63,8 @@ class CondominiumBilling(BaseModel):
         null=True,
     )
 
+    objects = CondominiumBillingManager()
+
     class Meta(BaseModel.Meta):
         verbose_name = "Condominium Billing"
         verbose_name_plural = "Condominium Billings"
@@ -75,12 +81,25 @@ class CondominiumBilling(BaseModel):
             models.CheckConstraint(
                 name="condominium_billing_discount_days_required",
                 condition=(
-                    Q(early_payment_discount_percent__isnull=True)
-                    | Q(early_payment_discount_amount__isnull=True)
-                    & Q(early_payment_discount_days__isnull=False)
+                    Q(early_payment_discount_percent__isnull=True, early_payment_discount_amount__isnull=True)
+                    | Q(early_payment_discount_days__isnull=False)
                 ),
             ),
         )
 
     def __str__(self) -> str:
         return f"{self.condominium} - {self.get_calculation_competence_display()}"
+
+    def clean(self):
+
+        super().clean()
+
+        if self._state.adding:
+            return
+
+        stored_id = CondominiumBilling.objects.stored_condominium_id(self.pk)
+
+        if stored_id is not None and stored_id != self.condominium_id:
+            raise ValidationError(
+                {"condominium": "The condominium of billing cannot be changed"}
+            )

@@ -16,8 +16,3 @@ class CondominiumBillingSerializer(serializers.ModelSerializer):
             "credit_limit",
         )
 
-    def _current_value(self, attrs, field):
-        if field in attrs:
-            return attrs[field]
-        billing = getattr(self.root.instance, "billing", None)
-        return getattr(billing, field, None)
