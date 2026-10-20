@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models.query_utils import Q
-from rest_framework.exceptions import ValidationError
 
 from condominiums.models.query_sets import CondominiumManager
 from setup.models import Address, BaseModel
@@ -85,15 +85,21 @@ class Condominium(BaseModel):
             )
 
     @transaction.atomic
-    def update_profile(self, *, address_data=None, billing_data=None):
+    def update_profile(
+        self, *, condominium_data=None, address_data=None, billing_data=None
+    ):
         address_data = address_data or {}
         billing_data = billing_data or {}
+        condominium_data = condominium_data or {}
 
         for field, value in address_data.items():
             setattr(self.address, field, value)
 
         for field, value in billing_data.items():
             setattr(self.billing, field, value)
+
+        for field, value in condominium_data.items():
+            setattr(self, field, value)
 
         full_clean_all({"": self, "address": self.address, "billing": self.billing})
         self.address.save()
