@@ -37,34 +37,23 @@ class CondominiumSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
+        company = validated_data.pop("company")
         address_data = validated_data.pop("address")
         billing_data = validated_data.pop("billing")
-
-        address = Address.objects.create(**address_data)
-
-        condominium = Condominium.objects.create(address=address, **validated_data)
-
-        CondominiumBilling.objects.create(condominium=condominium, **billing_data)
-
-        return condominium
+        return Condominium.create_with_related(
+            company=company,
+            condominium_data=validated_data,
+            address_data=address_data,
+            billing_data=billing_data,
+        )
 
     @transaction.atomic
     def update(self, instance, validated_data):
         address_data = validated_data.pop("address", None)
         billing_data = validated_data.pop("billing", None)
 
-        if address_data:
-            for field, value in address_data.items():
-                setattr(instance.address, field, value)
-            instance.address.save()
-
-        if billing_data:
-            for field, value in billing_data.items():
-                setattr(instance.billing, field, value)
-            instance.billing.save()
-
-        for field, value in validated_data.items():
-            setattr(instance, field, value)
-        instance.save()
-
-        return instance
+        return instance.update_profile(
+            condominium_data=validated_data,
+            address_data=address_data,
+            billing_data=billing_data,
+        )
