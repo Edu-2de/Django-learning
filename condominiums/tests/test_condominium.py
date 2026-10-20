@@ -45,3 +45,23 @@ class TestCondominiumModel:
             condominium.full_clean()
 
         assert "company" in exc.value.message_dict
+
+    def test_editing_only_the_address_is_allowed(self, make_condominium, make_address):
+        condominium = make_condominium()
+        condominium.address = make_address()
+
+        condominium.full_clean()
+
+    def test_editing_only_the_billing_is_allowed(self, make_condominium, make_billing):
+        condominium = make_condominium()
+        condominium.billing = make_billing()
+
+        condominium.full_clean()
+
+    def test_edit_condominium_data_is_allowed(self, make_condominium):
+        condominium = make_condominium()
+        condominium.name = "Condo 002"
+
+        condominium.full_clean()
+
+    
