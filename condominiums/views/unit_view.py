@@ -12,16 +12,13 @@ class UnitViewSet(
     viewsets.GenericViewSet,
 ):
     serializer_class = UnitSerializer
-    http_method_name = ("post", "get", "patch", "head", "options")
+    http_method_names = ("post", "get", "patch", "head", "options")
 
     def get_queryset(self):
-        queryset = Unit.objects.prefetch_related("condominium").order_by("name")
+        queryset = Unit.objects.select_related("condominium", "block").order_by("name")
 
         user = self.request.user
         if user.is_superuser:
             return queryset
 
-        return queryset.filter(company_id=user.company_id)
-
-    def perform_create(self, serializer):
-        return serializer.save(company=self.request.user.company)
+        return queryset.filter(condominium__company_id=user.company_id)
