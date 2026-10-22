@@ -27,3 +27,18 @@ class TestCondominiumSerializer:
 
         assert condominium.name == "Sol"
         assert condominium.billing.due_day == 10
+
+    def test_valid_update(self, make_condominium):
+        condominium = make_condominium(name="Condo 001")
+        serializer = CondominiumSerializer(
+            condominium,
+            data={"name": "Condo 002"},
+            partial=True,
+            context=make_context(),
+        )
+
+        assert serializer.is_valid(), serializer.errors
+        serializer.save()
+        condominium.refresh_from_db()
+
+        assert condominium.name == "Condo 002"

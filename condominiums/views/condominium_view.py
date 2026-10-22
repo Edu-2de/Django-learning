@@ -17,7 +17,7 @@ class CondominiumViewSet(
     def get_queryset(self):
         queryset = (
             Condominium.objects.select_related("address", "billing")
-            .prefetch_related("blocks")
+            .prefetch_related("blocks", "units")
             .order_by("code")
         )
 

@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.query_utils import Q
-from django.forms import ValidationError
 
 from condominiums.models.query_sets import CondominiumBillingManager
 from setup.models.base import BaseModel
@@ -81,7 +81,10 @@ class CondominiumBilling(BaseModel):
             models.CheckConstraint(
                 name="condominium_billing_discount_days_required",
                 condition=(
-                    Q(early_payment_discount_percent__isnull=True, early_payment_discount_amount__isnull=True)
+                    Q(
+                        early_payment_discount_percent__isnull=True,
+                        early_payment_discount_amount__isnull=True,
+                    )
                     | Q(early_payment_discount_days__isnull=False)
                 ),
             ),

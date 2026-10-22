@@ -4,3 +4,4 @@ from .condominium_billing_serializer import (
     CondominiumBillingSerializer as CondominiumBillingSerializer,
 )
 from .condominium_serializer import CondominiumSerializer as CondominiumSerializer
+from .unit_serializer import UnitSerializer as UnitSerializer

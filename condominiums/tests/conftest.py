@@ -3,7 +3,7 @@ from datetime import date
 
 import pytest
 
-from condominiums.models import Block, Company, Condominium, CondominiumBilling
+from condominiums.models import Block, Company, Condominium, CondominiumBilling, Unit
 from setup.models import Address
 
 _counter = itertools.count(1)
@@ -108,5 +108,25 @@ def condominium_payload():
         }
         data.update(overrides)
         return data
+
+    return _make
+
+
+@pytest.fixture
+def make_unit(make_condominium, make_block):
+    def _make(**overrides):
+        n = next(_counter)
+
+        condominium = make_condominium()
+
+        data = {
+            "condominium": condominium,
+            "block": make_block(condominium=condominium),
+            "name": f"Unit{n}",
+            "type": Unit.Type.APARTMENT,
+            "ideal_fraction": 1,
+        }
+        data.update(overrides)
+        return Unit.objects.create(**data)
 
     return _make
